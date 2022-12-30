@@ -1,0 +1,31 @@
+{
+
+  "manifest_version": 2,
+  "name": "RecentTab",
+  "version": "1.0",
+
+  "description": "Orders tabs by most recently used.",
+  "homepage_url": "https://github.com/mdn/webextensions-examples/tree/master/beastify",
+  "icons": {
+    "48": "icons/border-48.png"
+  },
+
+
+  "permissions" : [
+    "tabs",
+    "storage"
+  ],
+
+
+  "background": {
+    "scripts": ["background.js"]
+  },
+
+  "browser_specific_settings": {
+    "gecko": {
+      "id": "RecentTab@recenttab.com"
+    }
+  }
+
+
+}
