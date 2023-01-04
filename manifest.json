@@ -18,7 +18,10 @@
 
 
   "background": {
-    "scripts": ["background.js"]
+    "scripts": [
+      "browser-polyfill.js",
+      "background.js"
+    ]
   },
 
   "browser_specific_settings": {
