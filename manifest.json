@@ -4,16 +4,16 @@
   "name": "RecentTab",
   "version": "1.0",
 
-  "description": "Orders tabs by most recently used.",
-  "homepage_url": "https://github.com/mdn/webextensions-examples/tree/master/beastify",
+  "description": "keeps your tabs sorted by most recently used.",
+  "homepage_url": "https://github.com/BigBrain-Industries/recent-tabs/tree/master",
   "icons": {
-    "48": "icons/border-48.png"
+    "48": "icons/icon-48.png",
+    "96": "icons/icon-96.png"
   },
 
 
   "permissions" : [
-    "tabs",
-    "storage"
+    "tabs"
   ],
 
 
