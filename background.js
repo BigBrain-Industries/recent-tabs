@@ -1,3 +1,8 @@
+
+const tabIdToTimeout = new Map();
+//RDO: might have to use persistent state: https://developer.chrome.com/docs/extensions/develop/migrate/to-service-workers#persist-states
+const timeBeforeTabConsideredViewed = 3000;
+
 function onMoved(tab) {
     console.log(`Moved: ${tab}`);
 }
@@ -5,9 +10,6 @@ function onMoved(tab) {
 function onError(error) {
     console.log(`Error: ${error}`);
 }
-
-const tabIdToTimeout = new Map();
-const timeBeforeTabConsideredViewed = 3000;
 
 function toString(tab) {
     return `tab(${tab.id}) "${tab.title}" `
@@ -49,6 +51,7 @@ async function onTabActivated(activeInfo) {
         await cancelTabMove(tabId);
     }
 
+    //RDO: if timeBeforeTabConsideredViewed is over 30 seconds, must use the Alarms Api instead because of service worker lifecycle:  https://developer.chrome.com/docs/extensions/develop/migrate/to-service-workers#convert-timers
     let moveTimeoutId = setTimeout(async function () {
         await moveTabToEnd(tabId);
     }, timeBeforeTabConsideredViewed);
