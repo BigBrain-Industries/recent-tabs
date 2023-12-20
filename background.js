@@ -3,7 +3,7 @@ const tabIdToTimeout = new Map();
 
 // set default to 3 seconds if not defined
 browser.storage.local.get("timeBeforeTabConsideredViewedSetting").then((results) => {
-    if (results.timeBeforeTabConsideredViewedSetting) {
+    if (!results.timeBeforeTabConsideredViewedSetting) {
         let timeBeforeTabConsideredViewedSetting = {value: 3}; // default value is 3 seconds
         browser.storage.local.set({timeBeforeTabConsideredViewedSetting});
     }
@@ -11,7 +11,7 @@ browser.storage.local.get("timeBeforeTabConsideredViewedSetting").then((results)
 
 // set default to 3 seconds if not defined
 browser.storage.local.get("moveTabsToBeginningSetting").then((results) => {
-    if (results.moveTabsToBeginningSetting) {
+    if (!results.moveTabsToBeginningSetting) {
         let moveTabsToBeginningSetting = {value: false}; // default value is false
         browser.storage.local.set({moveTabsToBeginningSetting});
     }
