@@ -1,5 +1,7 @@
 
 const tabIdToTimeout = new Map();
+
+// set default to 3 seconds if not defined
 browser.storage.local.get("timeBeforeTabConsideredViewedSetting").then((results) => {
     if (results.timeBeforeTabConsideredViewedSetting) {
         let timeBeforeTabConsideredViewedSetting = {value: 3}; // default value is 3 seconds
@@ -7,6 +9,18 @@ browser.storage.local.get("timeBeforeTabConsideredViewedSetting").then((results)
     }
 });
 
+// set default to 3 seconds if not defined
+browser.storage.local.get("moveTabsToBeginningSetting").then((results) => {
+    if (results.moveTabsToBeginningSetting) {
+        let moveTabsToBeginningSetting = {value: false}; // default value is false
+        browser.storage.local.set({moveTabsToBeginningSetting});
+    }
+});
+
+async function getMoveTabsToBeginning() {
+    let results = await browser.storage.local.get("moveTabsToBeginningSetting");
+    return results.moveTabsToBeginningSetting.value; //RDO: change to getter/setter
+}
 
 function onMoved(tab) {
     console.log(`Moved: ${tab}`);
@@ -33,13 +47,20 @@ async function removeTimeout(tabId) {
     await cancelTabMove(tabId);
 }
 
-async function moveTabToEnd(tabId) {
+async function moveTabToDestination(tabId) {
     let tab = await browser.tabs.get(tabId);
 
     // if (tab.active) {
-    let moving = browser.tabs.move(tabId, {index: -1}); //RDO: change
-    console.log(`moving ${toString(tab)} to end`);
-    moving.then(onMoved, onMoveError(async () => await moveTabToEnd(tabId)));
+    let moving;
+    let moveTabsToBeginning = await getMoveTabsToBeginning();
+    if (moveTabsToBeginning) {
+        moving = browser.tabs.move(tabId, {index: 0});
+        console.log(`moving ${toString(tab)} to beginning`);
+    } else {
+        moving = browser.tabs.move(tabId, {index: -1}); //RDO: change
+        console.log(`moving ${toString(tab)} to end`);
+    }
+    moving.then(onMoved, onMoveError(async () => await moveTabToDestination(tabId)));
     // }
 }
 
@@ -69,7 +90,7 @@ async function onTabActivated(activeInfo) {
     let results = await browser.storage.local.get("timeBeforeTabConsideredViewedSetting");
     let timeBeforeTabConsideredViewed = results.timeBeforeTabConsideredViewedSetting.value; //RDO: change to getter/setter
     let moveTimeoutId = setTimeout(async function () {
-        await moveTabToEnd(tabId);
+        await moveTabToDestination(tabId);
     }, timeBeforeTabConsideredViewed * 1000);
     console.log(`setting timeout ${moveTimeoutId} for tab ${toString(tab)}`);
     tabIdToTimeout.set(tabId, moveTimeoutId);
@@ -100,8 +121,8 @@ async function onTabCreated(tab) {
         const parentTabId = parentTab.id;
         if (tabIdToTimeout.has(parentTabId)) {
             await cancelTabMove(parentTabId);
-            await moveTabToEnd(parentTabId);
-            await moveTabToEnd(tab.id);
+            await moveTabToDestination(parentTabId);
+            await moveTabToDestination(tab.id);
         }
     }
 
@@ -179,5 +200,10 @@ browser.runtime.onMessage.addListener((message) => {
     if (message.command === "changeViewedTabTimeout") {
         let timeBeforeTabConsideredViewedSetting = { value: message.newValue };
         browser.storage.local.set({timeBeforeTabConsideredViewedSetting});
+    }
+    else if (message.command === "moveTabsToBeginning") {
+        let moveTabsToBeginningSetting = { value: message.newValue };
+        browser.storage.local.set({moveTabsToBeginningSetting});
+
     }
 });

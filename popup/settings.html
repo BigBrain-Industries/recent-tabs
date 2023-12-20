@@ -8,9 +8,9 @@
     <title>Settings</title>
 </head>
 <body>
-<h2>Settings</h2>
 
-<div class="card">
+<div id="settings-container" class="card m-3">
+    <h2 class="card-header text-center">Settings</h2>
     <ul class="list-group list-group-flush">
         <li class="list-group-item">
             <h5 class="card-title">Tab View Time</h5>
@@ -18,6 +18,16 @@
                 as
                 "viewed"</label><input id="myRange" type="range" min="0" max="30" class="slider">
             <p class="card-text">Value: <span id="demo"></span> seconds (default 3 seconds)</p>
+            <div class="card-body"></div>
+        </li>
+        <li class="list-group-item">
+            <h5 class="card-title">Move Tabs To Left</h5>
+            <div class="card-subtitle mb-2 text-muted">By default, tabs move to the right (end). 
+                Check this if you prefer them to move to the left (beginning).</div>
+            <div class="form-check form-switch">
+            <input id="moveTabsToLeftCheckbox" type="checkbox" role="switch" class="form-check-input">
+                <label id="moveTabsToLeftLabel" class="form-check-label" for="moveTabsToLeftCheckbox">move tabs to left</label>
+            </div>
             <div class="card-body"></div>
         </li>
     </ul>

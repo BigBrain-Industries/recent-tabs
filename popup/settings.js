@@ -18,3 +18,21 @@ timeBeforeTabConsideredViewedSettingSlider.addEventListener("input", e => {
         newValue: newValue
     });
 })
+
+// set initial value
+let moveTabsToLeftCheckbox = document.getElementById("moveTabsToLeftCheckbox");
+browser.storage.local.get("moveTabsToBeginningSetting").then(
+    (results) => {
+        let storedValue = results.moveTabsToBeginningSetting.value;
+        if (storedValue) {
+            moveTabsToLeftCheckbox.checked = true;
+        }
+});
+
+moveTabsToLeftCheckbox.addEventListener("input", e => {
+    let newValue = (e.target.checked);
+    browser.runtime.sendMessage({
+        command: "moveTabsToBeginning",
+        newValue: newValue
+    });
+})

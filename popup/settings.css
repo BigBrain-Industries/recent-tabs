@@ -28,3 +28,6 @@ button[type="reset"] {
 button[type="reset"]:hover {
     background-color: #EAEA9D;
 }
+
+#settings-container {
+}
