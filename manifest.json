@@ -2,7 +2,7 @@
 
   "manifest_version": 3,
   "name": "Recent Tabs Sort",
-  "version": "2.3.2",
+  "version": "2.4.0",
 
   "description": "keeps your tabs sorted by most recently used.",
   "homepage_url": "https://github.com/BigBrain-Industries/recent-tabs/tree/master",
@@ -18,7 +18,10 @@
   ],
 
   "background": {
-    "service_worker": "service-worker.js"
+    "scripts": [
+      "browser-polyfill.js",
+      "background.js"
+    ]
   },
 
   "action": {
