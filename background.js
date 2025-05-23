@@ -23,15 +23,15 @@ async function getMoveTabsToBeginning() {
 }
 
 function onMoved(tab) {
-    console.log(`Moved: ${tab}`);
+    console.debug(`Moved: ${tab}`);
 }
 
 function onMoveError(repeatAction) {
     return function (error) {
-        console.log(`Error: ${error}`);
+        console.debug(`Error: ${error}`);
         // noinspection EqualityComparisonWithCoercionJS
         if (error == "Error: Tabs cannot be edited right now (user may be dragging a tab).") {
-            console.log(`repeating Action in 200 millis`);
+            console.debug(`repeating Action in 200 millis`);
             setTimeout(repeatAction, 200);
         }
         else {
@@ -57,7 +57,7 @@ async function moveTabToDestination(tabId) {
     let moveTabsToBeginning = await getMoveTabsToBeginning();
     if (moveTabsToBeginning) {
         moving = browser.tabs.move(tabId, {index: 0});
-        console.log(`moving ${toString(tab)} to beginning`);
+        console.debug(`moving ${toString(tab)} to beginning`);
     } else {
         // Check if the tab is part of a group
         if (tab.groupId !== undefined && tab.groupId !== -1) {
@@ -69,11 +69,11 @@ async function moveTabToDestination(tabId) {
             let relevantTabs = (tabsInSameGroup.length > 0) ? tabsInSameGroup : allTabs;
             let lastTabIndex = Math.max(...relevantTabs.map(t => t.index));
             moving = browser.tabs.move(tabId, {index: lastTabIndex});
-            console.log(`moving ${toString(tab)} to end at index: ${lastTabIndex}`);
+            console.debug(`moving ${toString(tab)} to end at index: ${lastTabIndex}`);
         } else {
             // If not in a group, move to the end of all tabs
             moving = browser.tabs.move(tabId, {index: -1});
-            console.log(`moving ${toString(tab)} to end`);
+            console.debug(`moving ${toString(tab)} to end`);
         }
     }
     moving.then(onMoved, onMoveError(async () => await moveTabToDestination(tabId)));
@@ -88,7 +88,7 @@ async function onTabActivated(activeInfo) {
         if (tabId !== existingTabId) {
             try {
                 let existingTab = await browser.tabs.get(existingTabId);
-                console.log(`tab ${toString(tab)} was activated. Removing existing timeout for tab ${toString(existingTab)}`)
+                console.debug(`tab ${toString(tab)} was activated. Removing existing timeout for tab ${toString(existingTab)}`)
                 await removeTimeout(existingTabId);
             } catch (e) {
                 console.warn(`failed to remove tmieout for existing tab ${existingTabId}`);
@@ -97,7 +97,7 @@ async function onTabActivated(activeInfo) {
     }
 
     if (tabIdToTimeout.has(tabId)) {
-        console.log(`tab ${toString(tab)} already has a move timeout. Cancelling that timeout.`);
+        console.debug(`tab ${toString(tab)} already has a move timeout. Cancelling that timeout.`);
         await cancelTabMove(tabId);
     }
 
@@ -107,7 +107,7 @@ async function onTabActivated(activeInfo) {
     let moveTimeoutId = setTimeout(async function () {
         await moveTabToDestination(tabId);
     }, timeBeforeTabConsideredViewed * 1000);
-    console.log(`setting timeout ${moveTimeoutId} for tab ${toString(tab)}`);
+    console.debug(`setting timeout ${moveTimeoutId} for tab ${toString(tab)}`);
     tabIdToTimeout.set(tabId, moveTimeoutId);
 }
 
@@ -119,7 +119,7 @@ async function cancelTabMove(tabId) {
         clearTimeout(timeout);
         try {
             let tab = await browser.tabs.get(tabId);
-            console.log(`deleted existing timeout ${timeout} for tab ${tab}`);
+            console.debug(`deleted existing timeout ${timeout} for tab ${tab}`);
         } catch (e) {
             // tab might not exist anymore
         }
@@ -132,7 +132,7 @@ async function onTabCreated(tab) {
     // the created tab and parent tab should immediately move all the way to the right.
     if (tab.openerTabId) {
         let parentTab = await browser.tabs.get(tab.openerTabId);
-        console.log(`parent tab is ${parentTab.title}`);
+        console.debug(`parent tab is ${parentTab.title}`);
         const parentTabId = parentTab.id;
         if (tabIdToTimeout.has(parentTabId)) {
             await cancelTabMove(parentTabId);
@@ -208,7 +208,7 @@ browser.tabs.onCreated.addListener(
 );
 
 browser.runtime.onSuspend.addListener(() => {
-    console.log("Unloading.");
+    console.debug("Unloading.");
 });
 
 browser.runtime.onMessage.addListener((message) => {
