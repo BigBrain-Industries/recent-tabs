@@ -1,6 +1,5 @@
-html,
-body {
-    width: 100px;
+html, body {
+    width: 400px;
 }
 
 .hidden {
@@ -28,4 +27,7 @@ button[type="reset"] {
 
 button[type="reset"]:hover {
     background-color: #EAEA9D;
+}
+
+#settings-container {
 }

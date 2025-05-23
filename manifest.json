@@ -2,7 +2,7 @@
 
   "manifest_version": 3,
   "name": "Recent Tabs Sort",
-  "version": "2.0",
+  "version": "2.3.2",
 
   "description": "keeps your tabs sorted by most recently used.",
   "homepage_url": "https://github.com/BigBrain-Industries/recent-tabs/tree/master",
@@ -13,9 +13,9 @@
 
 
   "permissions" : [
-    "tabs"
+    "tabs",
+    "storage"
   ],
-
 
   "background": {
     "scripts": [
@@ -24,11 +24,14 @@
     ]
   },
 
-  "browser_specific_settings": {
-    "gecko": {
-      "id": "RecentTab@recenttab.com"
-    }
-  }
+  "action": {
+    "default_icon": "icons/icon-48.png",
+    "default_title": "Recent Tabs",
+    "default_popup": "popup/settings.html"
+  },
 
+  "options_ui": {
+    "page": "popup/settings.html"
+  }
 
 }
