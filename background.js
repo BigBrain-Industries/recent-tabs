@@ -50,18 +50,18 @@ async function removeTimeout(tabId) {
 async function moveTabToDestination(tabId) {
     let tab = await browser.tabs.get(tabId);
 
-    // if (tab.active) {
-    let moving;
-    let moveTabsToBeginning = await getMoveTabsToBeginning();
-    if (moveTabsToBeginning) {
-        moving = browser.tabs.move(tabId, {index: 0});
-        console.log(`moving ${toString(tab)} to beginning`);
-    } else {
-        moving = browser.tabs.move(tabId, {index: -1}); //RDO: change
-        console.log(`moving ${toString(tab)} to end`);
+    if (!tab.pinned) {
+        let moving;
+        let moveTabsToBeginning = await getMoveTabsToBeginning();
+        if (moveTabsToBeginning) {
+            moving = browser.tabs.move(tabId, {index: 0});
+            console.log(`moving ${toString(tab)} to beginning`);
+        } else {
+            moving = browser.tabs.move(tabId, {index: -1}); //RDO: change
+            console.log(`moving ${toString(tab)} to end`);
+        }
+        moving.then(onMoved, onMoveError(async () => await moveTabToDestination(tabId)));
     }
-    moving.then(onMoved, onMoveError(async () => await moveTabToDestination(tabId)));
-    // }
 }
 
 async function onTabActivated(activeInfo) {
