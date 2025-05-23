@@ -50,18 +50,33 @@ async function removeTimeout(tabId) {
 async function moveTabToDestination(tabId) {
     let tab = await browser.tabs.get(tabId);
 
-    if (!tab.pinned) {
-        let moving;
-        let moveTabsToBeginning = await getMoveTabsToBeginning();
-        if (moveTabsToBeginning) {
-            moving = browser.tabs.move(tabId, {index: 0});
-            console.log(`moving ${toString(tab)} to beginning`);
+    if (tab.pinned) {
+        return;
+    }
+    let moving;
+    let moveTabsToBeginning = await getMoveTabsToBeginning();
+    if (moveTabsToBeginning) {
+        moving = browser.tabs.move(tabId, {index: 0});
+        console.log(`moving ${toString(tab)} to beginning`);
+    } else {
+        // Check if the tab is part of a group
+        if (tab.groupId !== undefined && tab.groupId !== -1) {
+            // Get all tabs in the current window
+            let allTabs = await browser.tabs.query({windowId: tab.windowId});
+            // Find all tabs in the same group
+            let tabsInSameGroup = allTabs.filter(t => t.groupId === tab.groupId);
+
+            let relevantTabs = (tabsInSameGroup.length > 0) ? tabsInSameGroup : allTabs;
+            let lastTabIndex = Math.max(...relevantTabs.map(t => t.index));
+            moving = browser.tabs.move(tabId, {index: lastTabIndex});
+            console.log(`moving ${toString(tab)} to end at index: ${lastTabIndex}`);
         } else {
-            moving = browser.tabs.move(tabId, {index: -1}); //RDO: change
+            // If not in a group, move to the end of all tabs
+            moving = browser.tabs.move(tabId, {index: -1});
             console.log(`moving ${toString(tab)} to end`);
         }
-        moving.then(onMoved, onMoveError(async () => await moveTabToDestination(tabId)));
     }
+    moving.then(onMoved, onMoveError(async () => await moveTabToDestination(tabId)));
 }
 
 async function onTabActivated(activeInfo) {
